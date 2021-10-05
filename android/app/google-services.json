@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "166059898411",
+    "project_id": "earn-miles",
+    "storage_bucket": "earn-miles.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166059898411:android:8ad115d54a962be1975c6e",
+        "android_client_info": {
+          "package_name": "com.example.earn_miles"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "166059898411-19e1i41rqftcfpn613vdgkp3ggn2lgfh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUQNiB45ZwG9gWyRWHO4i-zbOj-mf7j0s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "166059898411-19e1i41rqftcfpn613vdgkp3ggn2lgfh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
