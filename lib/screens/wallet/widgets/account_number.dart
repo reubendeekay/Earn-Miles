@@ -11,30 +11,27 @@ class AccountNumber extends StatelessWidget {
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+          ),
           gradient: LinearGradient(colors: [
             Colors.amber.shade100,
             Colors.amber.shade300,
             Colors.amber.shade400,
           ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
       child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Row(
-                children: [
-                  Text(
-                    'Mpesa account number',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Spacer(),
-                  Icon(
-                    Icons.edit_rounded,
-                    color: kPrimaryColor,
-                  )
-                ],
+              Text(
+                'Mpesa account number',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(
+                height: 15,
               ),
               Text(
                 user.phoneNumber,

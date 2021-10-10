@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:earn_miles/models/solar_model.dart';
 
 class UserModel {
   final String phoneNumber;
@@ -11,10 +12,9 @@ class UserModel {
   final String profilePic;
   final double balance;
   final String password;
-  final String withdrawalPin;
-  final String mpesaNumber;
-  final String tier;
-  final List<String> referralIds;
+
+  List<SolarModel> solars;
+  final List<dynamic> referrals;
   final List<TransactionModel> transactions;
   final double dailyIncome;
 
@@ -27,22 +27,38 @@ class UserModel {
       this.profilePic,
       this.balance,
       this.password,
-      this.withdrawalPin,
-      this.mpesaNumber,
       this.transactions,
       this.dailyIncome,
-      this.tier,
-      this.referralIds,
+      this.solars,
+      this.referrals,
       this.invitationCode,
       this.referredBy});
+}
+
+class ReferralModel {
+  final String userId;
+  final double dailyIncome;
+  final String packageName;
+  List<ReferralModel> referrals;
+
+  ReferralModel(
+      {this.userId, this.dailyIncome, this.packageName, this.referrals});
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'dailyIncome': dailyIncome,
+      'packageName': packageName,
+      'referrals': referrals,
+    };
+  }
 }
 
 class TransactionModel {
   final String transactionId;
   final String transactionType;
   final String transactionAmount;
-  final Timestamp transactionDate;
-  final String transactionStatus;
+  final int transactionDate;
+  final bool transactionStatus;
   final String userId;
 
   TransactionModel(

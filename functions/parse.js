@@ -17,8 +17,7 @@ function parse(responseData) {
                     parsedData.mpesaReceiptNumber = element.Value;
                     break;
                 case "TransactionDate":
-                    parsedData.transactionDate = moment(
-                        element.Value,
+                    parsedData.transactionDate = moment(  element.Value,
                         "YYYYMMDDhhmmss"
                     ).unix();
                     break;

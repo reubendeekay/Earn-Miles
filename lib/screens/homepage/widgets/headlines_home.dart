@@ -124,12 +124,12 @@ class HeadlinesWidget extends StatelessWidget {
                   ])),
               if (isDeposit)
                 SizedBox(
-                  height: 5,
+                  height: 1,
                 ),
               if (isDeposit)
                 Text(
                   'Deposited',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 )
             ],
           )

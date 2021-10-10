@@ -4,8 +4,18 @@ import 'package:earn_miles/models/proof_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class WithdrawalProofs extends StatelessWidget {
+class WithdrawalProofs extends StatefulWidget {
   static const routeName = '/withdrawal-proofs';
+
+  @override
+  _WithdrawalProofsState createState() => _WithdrawalProofsState();
+}
+
+class _WithdrawalProofsState extends State<WithdrawalProofs> {
+  String phoneNumber;
+
+  bool isSearch = false;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -22,20 +32,25 @@ class WithdrawalProofs extends StatelessWidget {
             Container(
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      dateContainer(title: 'Starting date'),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 15),
-                        child: Text(
-                          '-',
-                          style: TextStyle(fontSize: 25),
-                        ),
-                      ),
-                      dateContainer(title: 'Ending date'),
-                    ],
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey[200],
+                    ),
+                    height: 50,
+                    child: TextFormField(
+                      onChanged: (val) {
+                        setState(() {
+                          phoneNumber = val;
+                        });
+                      },
+                      decoration: InputDecoration(
+                          hintText: 'Enter phone number',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 15)),
+                    ),
                   ),
-                  phoneContainer('Phone number'),
                   searchButton(size)
                 ],
               ),
@@ -43,36 +58,68 @@ class WithdrawalProofs extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
-            StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('testimonials')
-                  .orderBy('date')
-                  .snapshots(),
-              builder: (ctx, snapshot) {
-                if (!snapshot.hasData || snapshot.hasError) {
-                  return Container(
-                    height: 100,
-                  );
-                } else {
-                  List<DocumentSnapshot> docs = snapshot.data.docs;
-                  return ListView(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    children: docs
-                        .map((e) => WithdrawProofTile(
-                              proof: ProofModel(
-                                  phoneNumber: e['phoneNumber'],
-                                  date: e['date'].toDate(),
-                                  id: e.id,
-                                  imageUrl: e['image'],
-                                  profilePic: e['profilePic'],
-                                  description: e['comment']),
-                            ))
-                        .toList(),
-                  );
-                }
-              },
-            ),
+            if (!isSearch && phoneNumber == null)
+              StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('testimonials')
+                    .orderBy('date')
+                    .snapshots(),
+                builder: (ctx, snapshot) {
+                  if (!snapshot.hasData || snapshot.hasError) {
+                    return Container(
+                      height: 100,
+                    );
+                  } else {
+                    List<DocumentSnapshot> docs = snapshot.data.docs;
+                    return ListView(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      children: docs
+                          .map((e) => WithdrawProofTile(
+                                proof: ProofModel(
+                                    phoneNumber: e['phoneNumber'],
+                                    date: e['date'].toDate(),
+                                    id: e.id,
+                                    imageUrl: e['image'],
+                                    profilePic: e['profilePic'],
+                                    description: e['comment']),
+                              ))
+                          .toList(),
+                    );
+                  }
+                },
+              ),
+            if (isSearch && phoneNumber != null)
+              StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('testimonials')
+                    .where('phoneNumber', isLessThanOrEqualTo: phoneNumber)
+                    .snapshots(),
+                builder: (ctx, snapshot) {
+                  if (!snapshot.hasData || snapshot.hasError) {
+                    return Container(
+                      height: 100,
+                    );
+                  } else {
+                    List<DocumentSnapshot> docs = snapshot.data.docs;
+                    return ListView(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      children: docs
+                          .map((e) => WithdrawProofTile(
+                                proof: ProofModel(
+                                    phoneNumber: e['phoneNumber'],
+                                    date: e['date'].toDate(),
+                                    id: e.id,
+                                    imageUrl: e['image'],
+                                    profilePic: e['profilePic'],
+                                    description: e['comment']),
+                              ))
+                          .toList(),
+                    );
+                  }
+                },
+              ),
           ],
         ),
       ),
@@ -84,7 +131,11 @@ class WithdrawalProofs extends StatelessWidget {
       height: 50,
       width: size.width,
       child: RaisedButton(
-        onPressed: () {},
+        onPressed: () {
+          setState(() {
+            isSearch = true;
+          });
+        },
         color: kPrimaryColor,
         child: Text(
           'Search',
@@ -93,43 +144,6 @@ class WithdrawalProofs extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-      ),
-    );
-  }
-
-  Widget phoneContainer(String title) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 15),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.grey[200],
-      ),
-      height: 50,
-      child: TextField(
-        decoration: InputDecoration(
-            hintText: 'Enter phone number',
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(horizontal: 15)),
-      ),
-    );
-  }
-
-  Widget dateContainer({String title, String date}) {
-    return Expanded(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.grey[200],
-        ),
-        height: 45,
-        child: date != null
-            ? Text(date)
-            : Text(
-                title,
-                style: TextStyle(color: Colors.grey),
-              ),
       ),
     );
   }

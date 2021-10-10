@@ -26,8 +26,9 @@ class DepositRecord extends StatelessWidget {
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('transactions')
-                  .doc('users')
+                  .doc('deposit')
                   .collection(FirebaseAuth.instance.currentUser.uid)
+                  .orderBy('checkoutRequestID', descending: true)
                   .snapshots(),
               builder: (ctx, snapshot) {
                 if (!snapshot.hasData ||
@@ -41,14 +42,13 @@ class DepositRecord extends StatelessWidget {
                       physics: NeverScrollableScrollPhysics(),
                       children: documents
                           .map((e) => DepositRecordTile(
-                                TransactionModel(
-                                  transactionDate: e['date'],
-                                  userId: e['userId'],
-                                  transactionId: e['transactionId'],
-                                  transactionAmount: e['amount'],
-                                  transactionType: e['transactionType'],
-                                  transactionStatus: e['status'],
-                                ),
+                                amount: double.parse(e['amount']),
+                                description: e['resultDesc'],
+                                mpesaReceipt: e['merchantRequestID'],
+                                // status: e['confirmed'],
+                                // transDate: e['transactionDate'],
+                                resultCode: e['resultCode'],
+                                transId: e.id,
                               ))
                           .toList());
                 }
@@ -60,10 +60,30 @@ class DepositRecord extends StatelessWidget {
 }
 
 class DepositRecordTile extends StatelessWidget {
-  final TransactionModel transaction;
-  DepositRecordTile(this.transaction);
+  final double amount;
+  final String description;
+  final int transDate;
+  final String mpesaReceipt;
+  final String status;
+  final String transId;
+  final int resultCode;
+
+  const DepositRecordTile(
+      {Key key,
+      this.amount,
+      this.resultCode,
+      this.transId,
+      this.status,
+      this.description,
+      this.transDate,
+      this.mpesaReceipt})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    var date = transDate == null
+        ? DateTime.now()
+        : DateTime.fromMillisecondsSinceEpoch(transDate);
     final size = MediaQuery.of(context).size;
     return Container(
       width: size.width,
@@ -76,8 +96,9 @@ class DepositRecordTile extends StatelessWidget {
               Text('Payment amount'),
               Spacer(),
               Text(
-                transaction.transactionStatus,
-                style: TextStyle(color: Colors.red),
+                resultCode != 0 ? 'Failed' : 'Status',
+                style: TextStyle(
+                    color: resultCode != 0 ? Colors.red : Colors.green),
               )
             ],
           ),
@@ -85,9 +106,12 @@ class DepositRecordTile extends StatelessWidget {
             height: 5,
           ),
           Text(
-            'KES${transaction.transactionAmount}',
+            // 'KES${transaction.transactionAmount}',
+            'KES${amount.toStringAsFixed(0)}',
             style: TextStyle(
-                fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold),
+                fontSize: 18,
+                color: resultCode != 0 ? Colors.red : Colors.green,
+                fontWeight: FontWeight.bold),
           ),
           SizedBox(
             height: 10,
@@ -99,8 +123,7 @@ class DepositRecordTile extends StatelessWidget {
                 style: TextStyle(fontSize: 11, color: Colors.grey),
               ),
               Text(
-                DateFormat('yyyy-MM-ddd HH::mm:ss')
-                    .format(transaction.transactionDate.toDate()),
+                DateFormat('yyyy-MM-dd HH:mm:ss').format(date),
                 style: TextStyle(
                   fontSize: 11,
                 ),
@@ -117,7 +140,7 @@ class DepositRecordTile extends StatelessWidget {
                 style: TextStyle(fontSize: 11, color: Colors.grey),
               ),
               Text(
-                transaction.transactionId,
+                transId,
                 style: TextStyle(
                   fontSize: 11,
                 ),
@@ -128,12 +151,17 @@ class DepositRecordTile extends StatelessWidget {
             height: 10,
           ),
           Container(
-            color: Colors.yellow.withOpacity(0.2),
+            color: resultCode != 0
+                ? Colors.yellow.withOpacity(0.2)
+                : Colors.green.withOpacity(0.2),
             padding: EdgeInsets.all(10),
+            width: double.infinity,
             child: Text(
-              '''You have tried to deposit the amount to SolarDream, but it was failed, because you haven't completed all the payment steps successfully through M-Pesa checkout. Therefore, the amount hasn't been deducted from your M-Pesa account, you shall check the transaction details through your M-Pesa account, Please contact customer service if you feel the need.''',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: Colors.red),
+              description == null ? 'Failed to deposit' : '$description',
+              // textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 12,
+                  color: resultCode != 0 ? Colors.red : Colors.green),
             ),
           )
         ],

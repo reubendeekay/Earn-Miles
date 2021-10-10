@@ -7,6 +7,7 @@ import 'package:earn_miles/providers/auth_provider.dart';
 import 'package:earn_miles/providers/transaction_provider.dart';
 import 'package:earn_miles/screens/transcations/deposit_record.dart';
 import 'package:earn_miles/widgets/done_icon.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:earn_miles/main.dart';
 import 'package:provider/provider.dart';
@@ -145,35 +146,20 @@ class _DepositCardState extends State<DepositCard> {
                   setState(() {
                     isLoading = true;
                   });
+                  final uid = FirebaseAuth.instance.currentUser.uid;
 
                   mpesa
                       .lipaNaMpesa(
                     phoneNumber:
                         widget.user.phoneNumber.replaceRange(0, 1, '254'),
                     amount: double.parse(_selectedAmount),
-                    // amount: 1,
                     businessShortCode: "3027949",
                     accountReference:
                         widget.user.phoneNumber.replaceRange(0, 1, ''),
-
-                    // businessShortCode: "7923237",
-
                     callbackUrl:
-                        // "http://mpesa-requestbin.herokuapp.com/xiz8rexi",
-                        'https://smartearn.co.ke/callback_url.php',
+                        'https://us-central1-earn-miles.cloudfunctions.net/lmno_callback_url/user?uid=$uid/${int.parse(_selectedAmount)}',
                   )
                       .then((result) async {
-                    print('RESPONSE STATUS' + result.toString());
-                    await Provider.of<TransactionProvider>(context,
-                            listen: false)
-                        .addTransaction(TransactionModel(
-                      transactionAmount: _selectedAmount,
-                      transactionDate: Timestamp.now(),
-                      transactionStatus:
-                          result.ResponseCode == 0 ? 'Success' : 'Failed',
-                      transactionType: 'Deposit',
-                    ));
-
                     setState(() {
                       isLoading = false;
                     });
@@ -222,7 +208,7 @@ class _DepositCardState extends State<DepositCard> {
               height: 20,
             ),
             Text(
-              '**Make sureyour M-Pesa account has enough balance\n**Pay my own money into balance\n**Note: You shall click again 5 minutes later if the payment interface page hasnt popped up',
+              '**Make sure your M-Pesa account has enough balance\n**Pay my own money into balance\n**Note: You shall click again 5 minutes later if the payment interface page hasnt popped up',
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
             )
           ],

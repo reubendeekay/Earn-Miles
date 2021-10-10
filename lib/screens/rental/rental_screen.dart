@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:earn_miles/models/solar_model.dart';
+import 'package:earn_miles/screens/rental/my_solars.dart';
 import 'package:earn_miles/screens/rental/widgets/solar_item.dart';
 import 'package:earn_miles/widgets/loading_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class RentalScreen extends StatelessWidget {
   static const routeName = '/rental-screen';
@@ -13,6 +15,15 @@ class RentalScreen extends StatelessWidget {
         elevation: 0,
         title: Text('Rental Hall'),
         centerTitle: true,
+        actions: [
+          GestureDetector(
+            onTap: () => Navigator.of(context).pushNamed(MySolars.routeName),
+            child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                alignment: Alignment.center,
+                child: Text('My Solars')),
+          )
+        ],
       ),
       body: SafeArea(
           child: StreamBuilder(

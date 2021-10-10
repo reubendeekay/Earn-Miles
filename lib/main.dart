@@ -1,6 +1,7 @@
 import 'package:earn_miles/bottom_nav.dart';
 import 'package:earn_miles/constants.dart';
 import 'package:earn_miles/providers/auth_provider.dart';
+import 'package:earn_miles/providers/general_provider.dart';
 import 'package:earn_miles/providers/transaction_provider.dart';
 import 'package:earn_miles/screens/auth_screen.dart';
 import 'package:earn_miles/screens/bills/my_bill.dart';
@@ -10,13 +11,14 @@ import 'package:earn_miles/screens/message_center/announcement_screen.dart';
 import 'package:earn_miles/screens/message_center/message_center_screen.dart';
 
 import 'package:earn_miles/screens/referral_screen.dart';
+import 'package:earn_miles/screens/rental/my_solars.dart';
 import 'package:earn_miles/screens/rental/rental_details.dart';
 import 'package:earn_miles/screens/rental/rental_screen.dart';
 import 'package:earn_miles/screens/settings/about_us.dart';
 import 'package:earn_miles/screens/settings/change_password.dart';
-import 'package:earn_miles/screens/settings/change_withdrawal_pin.dart';
 import 'package:earn_miles/screens/settings/customer-service.dart';
 import 'package:earn_miles/screens/settings/feedback_form.dart';
+import 'package:earn_miles/screens/settings/forgot_password.dart';
 import 'package:earn_miles/screens/settings/privacy_policy.dart';
 import 'package:earn_miles/screens/settings/terms_of_service.dart';
 import 'package:earn_miles/screens/transcations/deposit_record.dart';
@@ -58,6 +60,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider.value(value: AuthProvider()),
         ChangeNotifierProvider.value(value: TransactionProvider()),
+        ChangeNotifierProvider.value(value: GeneralProvider()),
       ],
       child: GetMaterialApp(
         title: 'Flutter Demo',
@@ -75,7 +78,6 @@ class _MyAppState extends State<MyApp> {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (ctx, snapshot) => snapshot.hasData ? MyNav() : AuthScreen(),
         ),
-        // home: AuthScreen(),
         routes: {
           MyNav.routeName: (context) => MyNav(),
           DepositScreen.routeName: (context) => DepositScreen(),
@@ -92,14 +94,14 @@ class _MyAppState extends State<MyApp> {
           MyBill.routeName: (context) => MyBill(),
           DepositRecord.routeName: (context) => DepositRecord(),
           WithdrawRecord.routeName: (context) => WithdrawRecord(),
-          ChangeWithdrawalPinScreen.routeName: (context) =>
-              ChangeWithdrawalPinScreen(),
           RentalDetails.routeName: (context) => RentalDetails(),
           AuthScreen.routeName: (context) => AuthScreen(),
           RentalScreen.routeName: (context) => RentalScreen(),
           CustomerService.routeName: (context) => CustomerService(),
           AnnouncementScreen.routeName: (context) => AnnouncementScreen(),
           FaqDetails.routeName: (context) => FaqDetails(),
+          MySolars.routeName: (context) => MySolars(),
+          ForgotPassword.routeName: (context) => ForgotPassword(),
         },
       ),
     );

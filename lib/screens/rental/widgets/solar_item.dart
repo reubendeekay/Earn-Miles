@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:earn_miles/constants.dart';
 import 'package:earn_miles/models/solar_model.dart';
 import 'package:earn_miles/providers/auth_provider.dart';
+import 'package:earn_miles/providers/general_provider.dart';
 import 'package:earn_miles/screens/rental/rental_details.dart';
 import 'package:earn_miles/screens/transcations/deposit_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -96,10 +99,22 @@ class SolarItem extends StatelessWidget {
                                         'Are you sure you want to pay KES${solar.price} for this solar panel?'),
                                     actions: [
                                       TextButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
                                           child: Text('Cancel')),
                                       TextButton(
-                                          onPressed: () {},
+                                          onPressed: () async {
+                                            await Provider.of<GeneralProvider>(
+                                                    context,
+                                                    listen: false)
+                                                .purchaseSolar(solar, user);
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                                    content: Text(
+                                                        'Successfuly Purchased')));
+                                            Navigator.of(context).pop();
+                                          },
                                           child: Text('Confirm')),
                                     ]));
                       }

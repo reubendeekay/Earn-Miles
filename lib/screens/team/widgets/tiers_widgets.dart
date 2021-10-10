@@ -12,9 +12,9 @@ class Tiers extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 5),
       child: Column(
         children: [
-          TiersWidgets(),
-          TiersWidgets(),
-          TiersWidgets(),
+          TiersWidgets('Tier 1'),
+          TiersWidgets('Tier 2'),
+          TiersWidgets('Tier 3'),
         ],
       ),
     );
@@ -22,6 +22,8 @@ class Tiers extends StatelessWidget {
 }
 
 class TiersWidgets extends StatelessWidget {
+  final String title;
+  TiersWidgets(this.title);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,7 +34,7 @@ class TiersWidgets extends StatelessWidget {
           Container(
             margin: EdgeInsets.all(10),
             child: Text(
-              'Tier 1',
+              title,
               style: TextStyle(
                   color: kPrimaryColor,
                   fontSize: 17,

@@ -16,7 +16,7 @@ class AssetsHome extends StatelessWidget {
           Column(
             children: [
               Text(
-                'Total Assets(KES)',
+                'Balance(KES)',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               SizedBox(
@@ -34,14 +34,14 @@ class AssetsHome extends StatelessWidget {
           Column(
             children: [
               Text(
-                'Total Earnings(KES)',
+                'Daily Earning(KES)',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               SizedBox(
                 height: 5,
               ),
               Text(
-                '0',
+                user.dailyIncome.toStringAsFixed(2),
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,

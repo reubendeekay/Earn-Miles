@@ -70,10 +70,12 @@ class BillAccumulated extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title),
-          Text(
-            'KES$amount',
-            style: TextStyle(
-                color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
+          FittedBox(
+            child: Text(
+              'KES$amount',
+              style: TextStyle(
+                  color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),

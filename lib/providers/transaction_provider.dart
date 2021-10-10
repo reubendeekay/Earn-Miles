@@ -52,6 +52,7 @@ class TransactionProvider with ChangeNotifier {
       'userId': user.userId,
       'profilePic': user.profilePic,
       'phoneNumber': user.phoneNumber,
+      'isConfirmed':false,
       'email': user.email,
       'createdAt': Timestamp.now(),
     });

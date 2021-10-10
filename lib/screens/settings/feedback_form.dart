@@ -20,13 +20,14 @@ class FeedbackComplaintScreen extends StatefulWidget {
 
 class _FeedbackComplaintScreenState extends State<FeedbackComplaintScreen> {
   final _formKey = GlobalKey<FormState>();
-  File _image;
+  List<File> _images = [];
   int optionIndex = 0;
   String _option;
   String whatsappId;
   String telegramId;
   String description;
   String name;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +98,21 @@ class _FeedbackComplaintScreenState extends State<FeedbackComplaintScreen> {
               Row(
                 children: [
                   GestureDetector(
-                    onTap: () => _getImage(),
+                    onTap: () async {
+                      final pickedFile = await ImagePicker().getImage(
+                        source: ImageSource.gallery,
+                        imageQuality: 50,
+                      );
+
+                      setState(() {
+                        if (pickedFile != null) {
+                          _images.add(File(pickedFile.path));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('No image selected')));
+                        }
+                      });
+                    },
                     child: Container(
                         height: 90,
                         width: 90,
@@ -115,19 +130,21 @@ class _FeedbackComplaintScreenState extends State<FeedbackComplaintScreen> {
                           ),
                         )),
                   ),
-                  if (_image != null)
+                  if (_images.isNotEmpty)
                     SizedBox(
                       width: 20,
                     ),
-                  if (_image != null)
-                    Container(
-                      height: 100,
-                      width: 100,
-                      child: Image.file(
-                        _image,
-                        fit: BoxFit.cover,
-                      ),
-                    )
+                  if (_images.isNotEmpty)
+                    ...List.generate(
+                        _images.length,
+                        (index) => Container(
+                              height: 100,
+                              width: 100,
+                              child: Image.file(
+                                _images[index],
+                                fit: BoxFit.cover,
+                              ),
+                            ))
                 ],
               ),
               title('Name'),
@@ -139,6 +156,7 @@ class _FeedbackComplaintScreenState extends State<FeedbackComplaintScreen> {
                 ),
                 child: TextFormField(
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 15),
                     border: InputBorder.none,
                   ),
                   onChanged: (value) {
@@ -154,7 +172,7 @@ class _FeedbackComplaintScreenState extends State<FeedbackComplaintScreen> {
                   },
                 ),
               ),
-              title('WhatsApp Id'),
+              title('WhatsApp Number'),
               Container(
                 height: 50,
                 decoration: BoxDecoration(
@@ -163,6 +181,7 @@ class _FeedbackComplaintScreenState extends State<FeedbackComplaintScreen> {
                 ),
                 child: TextFormField(
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 15),
                     border: InputBorder.none,
                   ),
                   onChanged: (val) {
@@ -187,6 +206,7 @@ class _FeedbackComplaintScreenState extends State<FeedbackComplaintScreen> {
                 ),
                 child: TextFormField(
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 15),
                     border: InputBorder.none,
                   ),
                   onChanged: (val) {
@@ -212,25 +232,33 @@ class _FeedbackComplaintScreenState extends State<FeedbackComplaintScreen> {
                   ),
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
-                      final imageData = await FirebaseStorage.instance
-                          .ref('feedback/files/${user.userId}/')
-                          .putFile(_image);
-
-                      final url = await imageData.ref.getDownloadURL();
-                      FirebaseFirestore.instance
-                          .collection('admin')
-                          .doc('feedback')
-                          .collection('users')
-                          .doc(FirebaseAuth.instance.currentUser.uid)
-                          .set({
-                        'phone:': user.phoneNumber,
-                        'whatsapp': whatsappId,
-                        'telegram': telegramId,
-                        'feedback': description,
-                        'image': url,
-                        'type': _option,
-                        'status': false,
-                        'date': DateTime.now().toIso8601String(),
+                      List<String> imageUrls = [];
+                      await Future.forEach(_images, (element) async {
+                        final imageData = await FirebaseStorage.instance
+                            .ref('feedback/files/${user.userId}/')
+                            .putFile(element);
+                        final url = await imageData.ref.getDownloadURL();
+                        imageUrls.add(url);
+                      }).then((_) {
+                        FirebaseFirestore.instance
+                            .collection('admin')
+                            .doc('feedback')
+                            .collection('users')
+                            .doc(FirebaseAuth.instance.currentUser.uid)
+                            .set({
+                          'phone:': user.phoneNumber,
+                          'userId': FirebaseAuth.instance.currentUser.uid,
+                          'whatsapp': whatsappId,
+                          'telegram': telegramId,
+                          'feedback': description,
+                          'image': imageUrls,
+                          'profilePic': user.profilePic,
+                          'email': user.email,
+                          'type': options[optionIndex],
+                          'isOpened': false,
+                          'status': false,
+                          'date': Timestamp.now(),
+                        });
                       });
 
                       showDialog(
@@ -245,13 +273,20 @@ class _FeedbackComplaintScreenState extends State<FeedbackComplaintScreen> {
                         ),
                       );
                       Future.delayed(Duration(milliseconds: 2500))
-                          .then((value) => Navigator.pop(context));
+                          .then((value) {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      });
                     }
                   },
-                  child: Text(
-                    'Submit',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: isLoading
+                      ? CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : Text(
+                          'Submit',
+                          style: TextStyle(color: Colors.white),
+                        ),
                 ),
               ),
               SizedBox(height: 50),
@@ -284,21 +319,5 @@ class _FeedbackComplaintScreenState extends State<FeedbackComplaintScreen> {
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
     );
-  }
-
-  Future<void> _getImage() async {
-    final pickedFile = await ImagePicker().getImage(
-      source: ImageSource.gallery,
-      imageQuality: 50,
-    );
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('No image selected')));
-      }
-    });
   }
 }

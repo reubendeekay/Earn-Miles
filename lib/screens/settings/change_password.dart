@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:earn_miles/constants.dart';
 import 'package:earn_miles/providers/auth_provider.dart';
+import 'package:earn_miles/screens/settings/forgot_password.dart';
 import 'package:earn_miles/widgets/done_icon.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   String initialPassword;
   String newPassword;
   String confirmPassword;
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
@@ -138,11 +140,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     borderRadius: BorderRadius.circular(20)),
                 alignment: Alignment.centerLeft,
                 margin: EdgeInsets.symmetric(vertical: 20),
-                child: Text(
-                  'Forgot original password',
-                  style: TextStyle(
-                      color: Colors.red[900],
-                      decoration: TextDecoration.underline),
+                child: GestureDetector(
+                  onTap: () =>
+                      Navigator.of(context).pushNamed(ForgotPassword.routeName),
+                  child: Text(
+                    'Forgot original password',
+                    style: TextStyle(
+                        color: Colors.red[900],
+                        decoration: TextDecoration.underline),
+                  ),
                 ),
               ),
               Container(
@@ -150,6 +156,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 height: 50,
                 child: RaisedButton(
                   onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+
                     await trySubmit();
                     showDialog(
                       context: context,
@@ -162,14 +172,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     );
                     Future.delayed(Duration(milliseconds: 2500))
                         .then((value) => Navigator.pop(context));
+                    setState(() {
+                      isLoading = false;
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Password succefully changed')));
                   },
                   color: kPrimaryColor,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30)),
-                  child: Text(
-                    'Submit',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  child: isLoading
+                      ? CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : Text(
+                          'Submit',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
                 ),
               )
             ],

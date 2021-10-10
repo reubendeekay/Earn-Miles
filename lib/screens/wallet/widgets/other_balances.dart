@@ -11,10 +11,12 @@ class OtherBalances extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          buildBalance(title: 'Todays\n total revenue', number: 'KES0'),
+          buildBalance(
+              title: 'Todays\n total revenue',
+              number: 'KES${user.dailyIncome}'),
           buildBalance(
             title: 'Number of referrals\nin Tier 1,2,3',
-            number: '0',
+            number: user.referrals.length.toString(),
           ),
           buildBalance(
               title: 'Accumulated revenue\n from referrals', number: '0'),

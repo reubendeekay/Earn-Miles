@@ -1,9 +1,7 @@
 import 'package:earn_miles/constants.dart';
-import 'package:earn_miles/screens/auth_screen.dart';
 import 'package:earn_miles/screens/faq/faq.dart';
 import 'package:earn_miles/screens/settings/about_us.dart';
 import 'package:earn_miles/screens/settings/change_password.dart';
-import 'package:earn_miles/screens/settings/change_withdrawal_pin.dart';
 import 'package:earn_miles/screens/settings/customer-service.dart';
 import 'package:earn_miles/screens/settings/feedback_form.dart';
 import 'package:earn_miles/screens/settings/privacy_policy.dart';
@@ -31,11 +29,6 @@ class ProfileActions extends StatelessWidget {
               title: 'Change \nPassword',
               icon: Icons.lock_outline,
               routeName: ChangePasswordScreen.routeName,
-            ),
-            ProfileActionsTile(
-              title: 'Change Withdrawal\n security pin',
-              icon: Icons.verified_user_outlined,
-              routeName: ChangeWithdrawalPinScreen.routeName,
             ),
             ProfileActionsTile(
               title: 'Feedback and\n complaint',

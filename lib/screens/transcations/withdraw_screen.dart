@@ -151,8 +151,8 @@ class _WithdrawCardState extends State<WithdrawCard> {
                           .requestWithdrwal(
                               TransactionModel(
                                   transactionAmount: _selectedAmount.toString(),
-                                  transactionDate: Timestamp.now(),
-                                  transactionStatus: 'Pending'),
+                                  // transactionDate: Timestamp.now(),
+                                  transactionStatus: false),
                               user);
                       showDialog(
                         context: context,

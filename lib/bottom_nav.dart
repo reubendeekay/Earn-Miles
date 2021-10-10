@@ -1,5 +1,6 @@
 import 'package:earn_miles/constants.dart';
 import 'package:earn_miles/providers/auth_provider.dart';
+import 'package:earn_miles/providers/general_provider.dart';
 import 'package:earn_miles/screens/homepage/home_page.dart';
 import 'package:earn_miles/screens/profile/profile_screen.dart';
 import 'package:earn_miles/screens/rental/rental_screen.dart';
@@ -24,9 +25,20 @@ class _MyNavState extends State<MyNav> {
   Widget build(BuildContext context) {
     Provider.of<AuthProvider>(context)
         .getCurrentUser(FirebaseAuth.instance.currentUser.uid);
+    Provider.of<GeneralProvider>(context).getGroups();
 
     return Scaffold(
-      body: _screens[_selectedIndex],
+      body: WillPopScope(
+          child: _screens[_selectedIndex],
+          onWillPop: () async {
+            if (_selectedIndex != 0) {
+              setState(() {
+                _selectedIndex = 0;
+              });
+            } else {
+              return Future.value(true);
+            }
+          }),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,

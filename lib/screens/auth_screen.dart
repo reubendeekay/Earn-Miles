@@ -2,6 +2,7 @@ import 'package:earn_miles/bottom_nav.dart';
 import 'package:earn_miles/constants.dart';
 import 'package:earn_miles/providers/auth_provider.dart';
 import 'package:earn_miles/screens/homepage/home_page.dart';
+import 'package:earn_miles/screens/settings/forgot_password.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -112,7 +113,6 @@ class _AuthScreenState extends State<AuthScreen> {
                             ///
                             ///
                             Container(
-                              height: 50,
                               width: double.infinity,
                               margin: EdgeInsets.symmetric(
                                   horizontal: 15, vertical: 10),
@@ -154,7 +154,6 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                             if (!isLogin)
                               Container(
-                                height: 50,
                                 width: double.infinity,
                                 margin: EdgeInsets.symmetric(
                                     horizontal: 15, vertical: 10),
@@ -196,7 +195,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                         }),
                               ),
                             Container(
-                              height: 50,
                               width: double.infinity,
                               margin: EdgeInsets.symmetric(
                                   horizontal: 15, vertical: 10),
@@ -253,7 +251,6 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                             if (!isLogin)
                               Container(
-                                height: 50,
                                 width: double.infinity,
                                 margin: EdgeInsets.symmetric(
                                     horizontal: 15, vertical: 10),
@@ -314,7 +311,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                   opacity: isLogin ? 0 : 1,
                                   duration: Duration(milliseconds: 1000),
                                   child: Container(
-                                    height: 50,
                                     width: double.infinity,
                                     margin: EdgeInsets.symmetric(
                                         horizontal: 15, vertical: 10),
@@ -354,7 +350,10 @@ class _AuthScreenState extends State<AuthScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Text('Forgot password'),
+                                GestureDetector(
+                                    onTap: () => Navigator.of(context)
+                                        .pushNamed(ForgotPassword.routeName),
+                                    child: Text('Forgot password')),
                                 SizedBox(
                                   width: 30,
                                 )
@@ -374,11 +373,10 @@ class _AuthScreenState extends State<AuthScreen> {
                                     borderRadius: BorderRadius.circular(15)),
                                 color: kPrimaryColor,
                                 onPressed: () async {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
+                                  isLoading = true;
 
                                   await trySubmit();
+                                  isLoading = false;
                                 },
                                 child: isLoading
                                     ? CircularProgressIndicator(
@@ -405,12 +403,16 @@ class _AuthScreenState extends State<AuthScreen> {
                                       isLogin = !isLogin;
                                     });
                                   },
-                                  child: Text(
-                                    isLogin ? 'Register' : 'Sign in',
-                                    style: TextStyle(
-                                        color: kPrimaryColor,
-                                        fontWeight: FontWeight.w600),
-                                  ),
+                                  child: isLoading
+                                      ? CircularProgressIndicator(
+                                          color: Colors.white,
+                                        )
+                                      : Text(
+                                          isLogin ? 'Register' : 'Sign in',
+                                          style: TextStyle(
+                                              color: kPrimaryColor,
+                                              fontWeight: FontWeight.w600),
+                                        ),
                                 ),
                               ],
                             )
@@ -435,11 +437,8 @@ class _AuthScreenState extends State<AuthScreen> {
       if (isLogin) {
         await Provider.of<AuthProvider>(context, listen: false)
             .login(email: _email.trim(), password: _password.trim())
-            .then((data) async {
-          // Navigator.of(context).pushReplacementNamed(MyNav.routeName);
-          await Provider.of<AuthProvider>(context, listen: false)
-              .getCurrentUser(FirebaseAuth.instance.currentUser.uid);
-        }).onError((error, stackTrace) {
+            .then((data) async {})
+            .onError((error, stackTrace) {
           setState(() {
             isLoading = false;
           });
@@ -450,19 +449,17 @@ class _AuthScreenState extends State<AuthScreen> {
       } else {
         await Provider.of<AuthProvider>(context, listen: false)
             .signUp(
-          email: _email.trim(),
-          password: _password.trim(),
-          phoneNumber: phoneNumber.trim(),
-          invitation: invitationCode,
-        )
-            .then((_) async {
-          // Navigator.of(context).pushReplacementNamed(MyNav.routeName);
-          await Provider.of<AuthProvider>(context, listen: false)
-              .getCurrentUser(FirebaseAuth.instance.currentUser.uid);
-        }).catchError((error) {
+              email: _email.trim(),
+              password: _password.trim(),
+              phoneNumber: phoneNumber.trim(),
+              invitation: invitationCode,
+            )
+            .then((_) async {})
+            .catchError((error) {
           setState(() {
             isLoading = false;
           });
+          print(error.toString());
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(error.toString()),
           ));

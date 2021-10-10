@@ -1,15 +1,18 @@
+import 'package:earn_miles/providers/auth_provider.dart';
 import 'package:earn_miles/screens/bills/my_bill.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AllBills extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<AuthProvider>(context).user;
     return Container(
       child: ListView(
         children: [
           BillAccumulated(
             title: 'Accumulated revenue from all items',
-            amount: '50',
+            amount: '${user.balance.toStringAsFixed(0)}',
           ),
           BillItem(),
         ],
